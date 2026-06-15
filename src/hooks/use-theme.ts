@@ -1,14 +1,16 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+import { useColorScheme } from 'react-native';
 
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeStore } from '@/store/theme-store';
 
+/** 根据主题偏好（亮/暗/跟随系统）解析出当前配色。 */
 export function useTheme() {
-  const scheme = useColorScheme();
-  const theme = scheme === 'unspecified' ? 'light' : scheme;
-
-  return Colors[theme];
+  const mode = useThemeStore((s) => s.mode);
+  const systemScheme = useColorScheme();
+  const resolved = mode === 'system' ? systemScheme : mode;
+  const scheme: 'light' | 'dark' = resolved === 'dark' ? 'dark' : 'light';
+  return {
+    scheme,
+    colors: Colors[scheme],
+  };
 }
